@@ -2,13 +2,23 @@ import { motion } from 'framer-motion';
 import { X, Chrome } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/Card';
+import { auth, googleProvider } from '../lib/firebase';
+import { signInWithPopup } from 'firebase/auth';
 
 interface LoginModalProps {
   onClose: () => void;
-  onLogin: () => void;
 }
 
-const LoginModal = ({ onClose, onLogin }: LoginModalProps) => {
+const LoginModal = ({ onClose }: LoginModalProps) => {
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      onClose();
+    } catch (error) {
+      console.error('Error signing in with Google:', error);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -50,7 +60,7 @@ const LoginModal = ({ onClose, onLogin }: LoginModalProps) => {
             <div className="h-[1px] w-full bg-zinc-800" />
             
             <Button 
-              onClick={onLogin} 
+              onClick={handleGoogleLogin} 
               variant="default" 
               size="lg" 
               className="w-full font-bold uppercase tracking-wider bg-white text-black hover:bg-zinc-200"

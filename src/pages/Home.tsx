@@ -235,7 +235,7 @@ const Home = ({ onOpenLogin, isLoggedIn, onLogout }: HomeProps) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const progress = window.scrollY / (window.innerHeight * 1.5);
+      const progress = window.scrollY / (window.innerHeight * 4);
       setScrollProgress(Math.min(1, progress));
     };
     window.addEventListener('scroll', handleScroll);
@@ -243,11 +243,34 @@ const Home = ({ onOpenLogin, isLoggedIn, onLogout }: HomeProps) => {
   }, []);
 
   const handleScrollClick = () => {
-    window.scrollTo({ top: window.innerHeight * 1.5, behavior: 'smooth' });
+    const target = window.innerHeight * 4;
+    const start = window.scrollY;
+    const distance = target - start;
+    const duration = 5000; // 5 seconds for a very slow cinematic scroll
+    let startTime: number | null = null;
+
+    const animation = (currentTime: number) => {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+      
+      // Easing function: easeInOutCubic
+      const ease = progress < 0.5
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+      window.scrollTo(0, start + distance * ease);
+
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation);
+      }
+    };
+
+    requestAnimationFrame(animation);
   };
 
   return (
-    <div className="bg-black text-white overflow-x-hidden min-h-[250vh]">
+    <div className="bg-black text-white overflow-x-hidden min-h-[500vh]">
       <div className="fixed inset-0 z-0">
         <Canvas shadows dpr={[1, 2]}>
           <color attach="background" args={['#000']} />
@@ -267,7 +290,7 @@ const Home = ({ onOpenLogin, isLoggedIn, onLogout }: HomeProps) => {
           <div className="flex gap-6 items-center border-l border-white/10 pl-8">
             {isLoggedIn ? (
               <>
-                <button onClick={() => navigate('/profile')} className="text-white font-mono text-[10px] tracking-[0.3em] uppercase hover:text-white/60 transition-colors pointer-events-auto">HISTORY</button>
+                <button onClick={() => navigate('/profile')} className="text-white font-mono text-[10px] tracking-[0.3em] uppercase hover:text-white/60 transition-colors pointer-events-auto">PROFILE</button>
                 <button onClick={onLogout} className="text-white/30 font-mono text-[10px] tracking-[0.3em] uppercase hover:text-white transition-colors pointer-events-auto">LOGOUT</button>
               </>
             ) : (
@@ -295,10 +318,10 @@ const Home = ({ onOpenLogin, isLoggedIn, onLogout }: HomeProps) => {
 
         <div 
           style={{ 
-            opacity: Math.max(0, (scrollProgress - 0.15) * 10),
-            transform: `translate(-50%, ${THREE.MathUtils.lerp(100, 0, Math.min(1, (scrollProgress - 0.15) * 5))}px)`
+            opacity: Math.max(0, (scrollProgress - 0.12) * 30),
+            transform: `translate(-50%, ${THREE.MathUtils.lerp(50, 0, Math.min(1, (scrollProgress - 0.12) * 20))}px)`
           }} 
-          className="absolute top-12 left-1/2 flex flex-col items-center transition-opacity duration-500"
+          className="absolute top-32 left-1/2 flex flex-col items-center transition-opacity duration-500"
         >
           <h1 className="text-5xl font-mythic text-white tracking-[0.5em] uppercase opacity-90 text-center px-4 whitespace-nowrap">Live Media Wall</h1>
           <div className="h-[1px] w-24 bg-white/20 mt-8" />

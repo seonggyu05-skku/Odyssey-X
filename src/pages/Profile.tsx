@@ -1,12 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import { useRef, Suspense } from 'react';
+import { useRef, Suspense, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, Float, PerspectiveCamera, Environment, OrbitControls } from '@react-three/drei';
-import { ArrowLeft, Award, Calendar, LogOut, Settings, Shield, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Award, Calendar, LogOut, Settings, Shield, ExternalLink, Check, X } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
 import * as THREE from 'three';
+import { auth } from '../lib/firebase';
+import { updateProfile } from 'firebase/auth';
 
 // --- Hologram Component ---
 const Hologram = () => {
@@ -59,10 +61,35 @@ interface ProfileProps {
 
 const Profile = ({ onLogout }: ProfileProps) => {
   const navigate = useNavigate();
+  const user = auth.currentUser;
+  
+  const [isEditing, setIsEditing] = useState(false);
+  const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setDisplayName(user.displayName || '');
+    }
+  }, [user]);
+
+  const handleUpdateProfile = async () => {
+    if (!user || !displayName.trim()) return;
+    
+    setIsSaving(true);
+    try {
+      await updateProfile(user, {
+        displayName: displayName
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const mockUser = {
-    name: "JEON SEONG GYU",
-    email: "daniel.jeon5@gmail.com",
     role: "PLAYER (CEO)",
     joinedDate: "2025.12.01",
     badges: [
@@ -111,14 +138,52 @@ const Profile = ({ onLogout }: ProfileProps) => {
                 </div>
 
                 <div className="pt-8 px-6 pb-8 w-full flex flex-col items-center">
-                  <h2 className="text-xl font-bold tracking-tight">{mockUser.name}</h2>
+                  {isEditing ? (
+                    <div className="flex items-center gap-2 w-full px-4">
+                      <input 
+                        type="text" 
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        className="bg-zinc-900 border border-zinc-800 rounded px-2 py-1 text-sm w-full focus:outline-none focus:border-white transition-colors"
+                        placeholder="Display Name"
+                        autoFocus
+                      />
+                      <button 
+                        onClick={handleUpdateProfile}
+                        disabled={isSaving}
+                        className="text-green-500 hover:text-green-400 disabled:opacity-50"
+                      >
+                        <Check size={18} />
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setIsEditing(false);
+                          setDisplayName(user?.displayName || '');
+                        }}
+                        className="text-red-500 hover:text-red-400"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+                  ) : (
+                    <h2 className="text-xl font-bold tracking-tight uppercase">
+                      {user?.displayName || "UNNAMED VOYAGER"}
+                    </h2>
+                  )}
+                  
                   <Badge variant="secondary" className="mt-2 text-[10px] font-mono uppercase tracking-widest">{mockUser.role}</Badge>
-                  <p className="text-xs text-zinc-500 mt-4 font-mono">{mockUser.email}</p>
+                  <p className="text-xs text-zinc-500 mt-4 font-mono">{user?.email}</p>
                   
                   <div className="w-full h-[1px] bg-zinc-800 my-6" />
                   
                   <div className="w-full space-y-2">
-                    <Button variant="outline" className="w-full justify-start text-xs" size="sm">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start text-xs" 
+                      size="sm"
+                      onClick={() => setIsEditing(true)}
+                      disabled={isEditing}
+                    >
                       <Settings className="mr-2 h-4 w-4" /> Edit Profile
                     </Button>
                     <Button variant="ghost" className="w-full justify-start text-xs text-red-400 hover:text-red-300 hover:bg-red-950/20" size="sm" onClick={onLogout}>

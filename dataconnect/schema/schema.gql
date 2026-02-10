@@ -1,0 +1,49 @@
+type User @table {
+  displayName: String!
+  email: String!
+  createdAt: Timestamp!
+  photoUrl: String
+  bio: String
+  userType: String
+}
+
+type Adventure @table {
+  provider: User
+  title: String!
+  description: String!
+  location: String!
+  price: Float!
+  duration: String!
+  difficulty: String!
+  category: String!
+  createdAt: Timestamp!
+  imageUrls: [String]
+  itinerary: String
+  requiredGear: [String]
+}
+
+type Booking @table {
+  adventurer: User
+  adventure: Adventure
+  bookingDate: Date!
+  status: String!
+  numberOfParticipants: Int!
+  totalPrice: Float!
+  createdAt: Timestamp!
+  specialRequests: String
+}
+
+type Review @table {
+  adventurer: User
+  adventure: Adventure
+  rating: Int!
+  comment: String!
+  createdAt: Timestamp!
+  imageUrls: [String]
+}
+
+type WishlistItem @table {
+  adventurer: User
+  adventure: Adventure
+  createdAt: Timestamp!
+}
