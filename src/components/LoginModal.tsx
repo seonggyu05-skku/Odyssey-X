@@ -12,8 +12,10 @@ interface LoginModalProps {
 const LoginModal = ({ onClose }: LoginModalProps) => {
   const handleGoogleLogin = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
-      onClose();
+      const result = await signInWithPopup(auth, googleProvider);
+      if (result.user) {
+        onClose();
+      }
     } catch (error) {
       console.error('Error signing in with Google:', error);
     }

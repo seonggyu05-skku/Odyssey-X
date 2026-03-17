@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
+import Apply from './pages/Apply';
+import Notices from './pages/Notices';
 import LoginModal from './components/LoginModal';
 import CosmicBackground from './components/CosmicBackground';
 import { auth } from './lib/firebase';
@@ -10,6 +12,8 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 function AppContent({ isLoggedIn, showLogin, setShowLogin }: any) {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const isApply = location.pathname === '/1_apply';
+  const isNotices = location.pathname.startsWith('/1_apply/notices');
 
   const handleLogout = async () => {
     try {
@@ -18,6 +22,17 @@ function AppContent({ isLoggedIn, showLogin, setShowLogin }: any) {
       console.error('Error signing out:', error);
     }
   };
+
+  // If we are on the isolated apply or notices page, render ONLY the respective component
+  if (isApply || isNotices) {
+    return (
+      <Routes>
+        <Route path="/1_apply" element={<Apply />} />
+        <Route path="/1_apply/notices" element={<Notices />} />
+        <Route path="/1_apply/notices/:id" element={<Notices />} />
+      </Routes>
+    );
+  }
 
   return (
     <div className="min-h-screen text-white relative">

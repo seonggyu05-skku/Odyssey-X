@@ -301,14 +301,14 @@ const Home = ({ onOpenLogin, isLoggedIn, onLogout }: HomeProps) => {
 
         <div 
           style={{ opacity: Math.max(0, 1 - scrollProgress * 6) }} 
-          className="absolute bottom-12 left-12 max-w-lg transition-opacity duration-300"
+          className="absolute bottom-24 md:bottom-12 left-8 md:left-12 max-w-lg transition-opacity duration-300"
         >
-          <h1 className="text-3xl font-mythic text-white tracking-[0.4em] mb-2 uppercase opacity-80">Building Ecosystems</h1>
-          <p className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em]">Unlock your Journey. Make your ideas a reality.</p>
+          <h1 className="text-2xl md:text-3xl font-mythic text-white tracking-[0.4em] mb-2 uppercase opacity-80">Building Ecosystems</h1>
+          <p className="text-[10px] font-mono text-white/70 uppercase tracking-[0.2em]">Unlock your Journey. Make your ideas a reality.</p>
         </div>
 
         <div 
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer transition-opacity duration-300 pointer-events-auto"
+          className="absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer transition-opacity duration-300 pointer-events-auto"
           style={{ opacity: Math.max(0, 1 - scrollProgress * 15) }}
           onClick={handleScrollClick}
         >
@@ -323,7 +323,7 @@ const Home = ({ onOpenLogin, isLoggedIn, onLogout }: HomeProps) => {
           }} 
           className="absolute top-32 left-1/2 flex flex-col items-center transition-opacity duration-500"
         >
-          <h1 className="text-5xl font-mythic text-white tracking-[0.5em] uppercase opacity-90 text-center px-4 whitespace-nowrap">Live Media Wall</h1>
+          <h1 className="text-2xl md:text-5xl font-mythic text-white tracking-[0.5em] uppercase opacity-90 text-center px-4 whitespace-nowrap">Live Media Wall</h1>
           <div className="h-[1px] w-24 bg-white/20 mt-8" />
         </div>
       </div>
